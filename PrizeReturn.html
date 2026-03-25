@@ -119,7 +119,7 @@
 
             let result = "";
             if (money >= 0 && money <= 99) {
-                result = "仅发放道具礼包，无珍珠补偿喵~<br><br>";
+                result = "仅发放道具礼包，无珍珠补偿<br><br>";
                 result += '<div class="package-name">为玩家发送启航助力礼包</div><br>';
                 result += "50,000蓝钻<br>锻造材料自选包*10<br>魂器材料自选包*10<br>养成材料自选包*5<br>战力提升自选包*2";
             } else if (money > 99 && money <= 499) {
@@ -141,7 +141,7 @@
                 const pearl = money * 100 * 0.5;
                 result = `为玩家发送${pearl}珍珠<br><br>`;
                 result += '<div class="package-name">为玩家发送至尊王者礼包</div><br>';
-                result += "2,000,000蓝钻<br>锻造材料自选包*300<br>魂器材料自选包*300<br>养成材料自选包*120<br>战力提升自选包*60<br>珍惜材料自选包*30<br>羽毛自选箱*2<br>专属红色称号<br>专属客服喵~";
+                result += "2,000,000蓝钻<br>锻造材料自选包*300<br>魂器材料自选包*300<br>养成材料自选包*120<br>战力提升自选包*60<br>珍惜材料自选包*30<br>羽毛自选箱*2<br>专属红色称号<br>专属客服";
             } else {
                 result = "超出最高累储金额范围，暂无额外奖励！";
             }
