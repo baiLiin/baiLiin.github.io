@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基金补偿计算器 (单文件版)</title>
+    <style>
+        /* CSS 代码直接嵌入到这里 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f7f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .calculator-container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-size: 1.2em;
+            margin-top: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #results-container {
+            margin-top: 20px;
+        }
+
+        #results p {
+            background-color: #e9f5ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #007bff;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h1>基金补偿计算器</h1>
+
+        <div class="form-group">
+            <label for="fund-select">请选择基金:</label>
+            <select id="fund-select">
+                <option value="qianlong">乾隆</option>
+                <option value="xiayuhe">夏雨荷</option>
+            </select>
+        </div>
+
+        <div id="prize-inputs">
+            <!-- JavaScript会在这里动态生成输入框 -->
+        </div>
+
+        <button id="calculate-btn">计算补偿</button>
+
+        <div id="results-container">
+            <h2>计算结果:</h2>
+            <div id="results">
+                <p>请先输入数量并点击计算。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript 代码直接嵌入到这里
+        document.addEventListener('DOMContentLoaded', () => {
+            // 基础数据，对应Java代码中的basicprize
+            const fundsData = {
+                qianlong: {
+                    name: '乾隆',
+                    prizes: [
+                        { id: 'p1', label: '太上皇玺', base: 4800 },
+                        { id: 'p2', label: '人参', base: 360 }
+                    ]
+                },
+                xiayuhe: {
+                    name: '夏雨荷',
+                    prizes: [
+                        { id: 'p1', label: '雪花膏', base: 480 },
+                        { id: 'p2', label: '补品', base: 240 }
+                    ]
+                }
+            };
+
+            const fundSelect = document.getElementById('fund-select');
+            const prizeInputsContainer = document.getElementById('prize-inputs');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resultsDiv = document.getElementById('results');
+
+            // 根据选择的基金，动态更新输入框
+            function updateInputs() {
+                const selectedFundKey = fundSelect.value;
+                const selectedFund = fundsData[selectedFundKey];
+
+                prizeInputsContainer.innerHTML = ''; // 清空旧的输入框
+
+                selectedFund.prizes.forEach(prize => {
+                    const group = document.createElement('div');
+                    group.className = 'form-group';
+
+                    const label = document.createElement('label');
+                    label.setAttribute('for', prize.id);
+                    label.textContent = `请输入已获得的 ${prize.label} 数量:`;
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = prize.id;
+                    input.placeholder = '0';
+                    input.min = 0;
+                    input.value = 0;
+
+                    group.appendChild(label);
+                    group.appendChild(input);
+                    prizeInputsContainer.appendChild(group);
+                });
+            }
+
+            // 计算并显示结果
+            function calculateCompensation() {
+                const selectedFundKey = fundSelect.value;
+                const selectedFund = fundsData[selectedFundKey];
+                
+                resultsDiv.innerHTML = ''; // 清空旧的结果
+
+                selectedFund.prizes.forEach(prize => {
+                    const input = document.getElementById(prize.id);
+                    const currentValue = parseInt(input.value, 10) || 0;
+                    
+                    // 计算需要补偿的数量
+                    const compensation = prize.base - currentValue;
+                    
+                    const resultPara = document.createElement('p');
+                    resultPara.textContent = `需要为玩家补偿 ${prize.label}：${compensation > 0 ? compensation : 0}`;
+                    resultsDiv.appendChild(resultPara);
+                });
+            }
+
+            // 绑定事件
+            fundSelect.addEventListener('change', updateInputs);
+            calculateBtn.addEventListener('click', calculateCompensation);
+
+            // 初始化页面
+            updateInputs();
+        });
+    </script>
+</body>
+</html>
